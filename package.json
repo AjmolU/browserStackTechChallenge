@@ -1,0 +1,30 @@
+{
+  "name": "browserstack-tech-challenge",
+  "version": "1.0.0",
+  "author": "Ajmol Uddin",
+  "license": "MIT",
+  "description": "Selenium examples using JestJS and BrowserStack",
+  "keywords": [
+    "browserstack",
+    "selenium",
+    "automate",
+    "examples",
+    "jest",
+    "jestjs"
+  ],
+  "devDependencies": {
+    "@types/jest": "^27.4.0",
+    "browserstack-node-sdk": "latest",
+    "jest": "^27.4.7"
+  },
+  "dependencies": {
+    "browserstack-local": "^1.4.8",
+    "dotenv": "^16.4.5",
+    "selenium-webdriver": "^4.1.2"
+  },
+  "scripts": {
+    "invite-users-test": "browserstack-node-sdk jest src/invite-users.test.js",
+    "all-test": "browserstack-node-sdk jest src/",
+    "postinstall": "npm update browserstack-node-sdk"
+  }
+}
