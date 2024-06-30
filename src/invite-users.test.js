@@ -58,11 +58,14 @@ describe("Invite users test", () => {
     }
     
     await driver.wait(until.elementLocated(By.id("invite-link")));
+    // Assert that the homepage includes a link to invite users
     const inviteLinkElement = await driver.findElement(By.id("invite-link"));
+    expect(inviteLinkElement).toBeDefined();
     await inviteLinkElement.click();
     const copyInvitationLinkElement = await driver.findElement(By.css('[aria-label="copy invitation link"]')) || await driver.findElement(By.css('.invite-modal__button--secondary'));
     await driver.executeScript("arguments[0].click();", copyInvitationLinkElement);
 
+    // Retrieve the link’s URL
     const inviteTextElement = await driver.findElement(By.css(".manage-users__invite-copyLink-text")) || await driver.findElement(By.css(".invite-modal__copy_text"));
     const inviteText = await inviteTextElement.getText();
 
@@ -78,6 +81,7 @@ describe("Invite users test", () => {
     
     expect(await driver.getCurrentUrl()).toContain("/automate");
 
+    // Assert retrieved URL links to the correct page
     await driver.get(inviteText);
     await driver.wait(until.urlContains("/users/sign_in?token"), 10000);
     expect(await driver.getCurrentUrl()).toContain("/users/sign_in?token");
