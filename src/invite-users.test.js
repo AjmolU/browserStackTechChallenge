@@ -27,7 +27,18 @@ describe("Invite users test", () => {
     if (windowWidth < 980) {
         await driver.findElement(By.id("primary-menu-toggle")).click();
     }
+
     await driver.wait(until.elementLocated(By.css(".bstack-mm-main-link-sign-in")));
+    try {
+      // Wait for the overlapping element to disappear if it exists
+      await driver.wait(until.elementIsNotVisible(driver.findElement(By.css("._vis_hide_layer"))), 10000);
+    } catch (e) {
+      // If the element is not found, proceed without error
+      if (e.name !== 'NoSuchElementError') {
+        throw e;
+      }
+    }
+
     await driver.findElement(By.css(".bstack-mm-main-link-sign-in")).click();
     
     await driver.wait(until.urlContains("/sign_in"), 10000);
@@ -37,11 +48,12 @@ describe("Invite users test", () => {
     await driver
     .findElement(By.id("user_password"))
     .sendKeys(password, Key.ENTER);
-
     await driver.wait(until.urlContains("/dashboard"), 10000);
+
     expect(await driver.getCurrentUrl()).toContain("/dashboard");
 
-    if (windowWidth < 980) {
+    let currentUrl = await driver.getCurrentUrl();
+    if (windowWidth < 980 && !currentUrl.includes("live")) {
         await driver.findElement(By.id("primary-menu-toggle")).click();
     }
     
@@ -51,7 +63,11 @@ describe("Invite users test", () => {
     const copyInvitationLinkElement = await driver.findElement(By.css('[aria-label="copy invitation link"]')) || await driver.findElement(By.css('.invite-modal__button--secondary'));
     await driver.executeScript("arguments[0].click();", copyInvitationLinkElement);
 
-    if (windowWidth < 980) {
+    const inviteTextElement = await driver.findElement(By.css(".manage-users__invite-copyLink-text")) || await driver.findElement(By.css(".invite-modal__copy_text"));
+    const inviteText = await inviteTextElement.getText();
+
+    currentUrl = await driver.getCurrentUrl();
+    if (windowWidth < 980 && !currentUrl.includes("live")) {
         await driver.findElement(By.id("primary-menu-toggle")).click();
         const signOutLinkElement = await driver.findElement(By.css(".sign_out_link"));
         await driver.executeScript("arguments[0].click();", signOutLinkElement);
@@ -61,6 +77,10 @@ describe("Invite users test", () => {
     }
     
     expect(await driver.getCurrentUrl()).toContain("/automate");
+
+    await driver.get(inviteText);
+    await driver.wait(until.urlContains("/users/sign_in?token"), 10000);
+    expect(await driver.getCurrentUrl()).toContain("/users/sign_in?token");
 
   }, 1000000);
 
